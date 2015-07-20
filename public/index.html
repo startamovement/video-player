@@ -16,8 +16,73 @@
   </head>
 
   <body>
-    <main id="main"></main>
+    <main id="main">
+      <div class="constrain">
+        <div class="video" data-url="M7lc1UVf-VE">
+          <div class="player-container">
+            <div></div>
+            <img src="http://img.youtube.com/vi/M7lc1UVf-VE/0.jpg">
+            <figure>
+              <h4>
+                <span class="play">play</span>
+                <span class="pause">pause</span>
+              </h4>
+            </figure>
+            <div class="progress-container">
+              <div class="bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="video" data-url="7lEp9CzjdO8">
+          <div class="player-container">
+            <div></div>
+            <img src="http://img.youtube.com/vi/7lEp9CzjdO8/0.jpg">
+            <figure>
+              <h4>
+                <span class="play">play</span>
+                <span class="pause">pause</span>
+              </h4>
+            </figure>
+            <div class="progress-container">
+              <div class="bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="video" data-url="q4zW4SR8x20">
+          <div class="player-container">
+            <div></div>
+            <img src="http://img.youtube.com/vi/q4zW4SR8x20/0.jpg">
+            <figure>
+              <h4>
+                <span class="play">play</span>
+                <span class="pause">pause</span>
+              </h4>
+            </figure>
+            <div class="progress-container">
+              <div class="bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
     <script type="text/javascript" src="/app.min.js"></script>
+    <script>
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      function onYouTubeIframeAPIReady() {
+        var video = $('.video');
+
+        $.each(video, function(index, element) {
+          var videoController = new ib.VideoController($(element));
+          videoController.init();
+          console.log("video");
+        });
+      }
+    </script>
   </body>
 </html>

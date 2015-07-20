@@ -67,7 +67,6 @@
 
     VideoController.prototype.onReady = function() {
       var video;
-      $('iframe').contents().find("head").append($("<style type='text/css'> .html5-bezel{display:none;}  </style>"));
       this.totalTime = this.player.getDuration();
       video = this.context.find('iframe');
       this.ratio = video.height() / video.width();

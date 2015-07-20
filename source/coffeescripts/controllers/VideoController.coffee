@@ -41,7 +41,7 @@ class ib.VideoController
     @player.setSize width = newWidth, height = newHeight
 
   onReady: =>
-    $('iframe').contents().find("head").append($("<style type='text/css'> .html5-bezel{display:none;}  </style>"))
+    # $('iframe').contents().find("head").append($("<style type='text/css'> .html5-bezel{display:none;}  </style>"))
     # $('iframe').contents().find('.html5-bezel').css
     #   display: 'none'
     @totalTime = @player.getDuration()
