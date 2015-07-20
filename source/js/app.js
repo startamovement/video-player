@@ -6,5 +6,5 @@ window.ib = {};
 
 // Quick example
 require('controllers/example_controller');
-var foo = new example_controller();
-foo.render();
+require('Events');
+require('controllers/VideoController');
