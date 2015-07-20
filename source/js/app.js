@@ -4,5 +4,5 @@ window._ = require('underscore');
 window.ib = {};
 
 require('controllers/example_controller');
-require('Events');
+require('controllers/Events');
 require('controllers/VideoController');
