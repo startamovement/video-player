@@ -5,4 +5,4 @@ window.ib = {};
 
 require('controllers/example_controller');
 // require('Events');
-// require('controllers/VideoController');
+require('controllers/VideoController');
