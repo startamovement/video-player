@@ -20,6 +20,7 @@ class ib.VideoController
         'controls': 0
         'iv_load_policy': 3
         'showinfo': 0
+        'rel': 0
       events:
         'onReady': @onReady
         'onStateChange': @onPlayerStateChange
@@ -57,8 +58,12 @@ class ib.VideoController
       @context.removeClass 'inactive'
       @progressBarOn()
 
-    else if event.data is YT.PlayerState.PAUSED or event.data is YT.PlayerState.ENDED
+    else if event.data is YT.PlayerState.PAUSED
       @context.addClass 'inactive'
+
+    else if event.data is YT.PlayerState.ENDED
+      @context.addClass 'inactive'
+      @thumbnail.removeClass 'hide'
 
   playButtonHandler: =>
     if @context.hasClass 'inactive'

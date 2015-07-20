@@ -38,7 +38,8 @@
           'autohide': 1,
           'controls': 0,
           'iv_load_policy': 3,
-          'showinfo': 0
+          'showinfo': 0,
+          'rel': 0
         },
         events: {
           'onReady': this.onReady,
@@ -82,8 +83,11 @@
       if (event.data === YT.PlayerState.PLAYING) {
         this.context.removeClass('inactive');
         return this.progressBarOn();
-      } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+      } else if (event.data === YT.PlayerState.PAUSED) {
         return this.context.addClass('inactive');
+      } else if (event.data === YT.PlayerState.ENDED) {
+        this.context.addClass('inactive');
+        return this.thumbnail.removeClass('hide');
       }
     };
 
