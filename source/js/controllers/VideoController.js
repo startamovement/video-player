@@ -119,7 +119,7 @@
           diff = currentTime / _this.totalTime;
           return _this.updateProgressBar(diff);
         };
-      })(this), 500);
+      })(this), 250);
     };
 
     VideoController.prototype.updateProgressBar = function(percentage) {

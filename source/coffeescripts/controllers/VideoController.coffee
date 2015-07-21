@@ -83,10 +83,10 @@ class ib.VideoController
   progressBarOn: =>
     @progress = setInterval =>
       currentTime = @player.getCurrentTime()
-      diff = (currentTime/@totalTime)
+      diff = currentTime/@totalTime
 
       @updateProgressBar diff
-    , 500
+    , 250
 
   updateProgressBar: (percentage) =>
     @progressBar.width percentage*100+'%'
@@ -103,7 +103,7 @@ class ib.VideoController
     width = @progressContainer.width()
 
     diff = x - offset
-    percentage = (diff/width)
+    percentage = diff/width
     time = percentage * @totalTime
 
     @updateProgressBar percentage
