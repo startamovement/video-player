@@ -8,6 +8,7 @@
 
   ib.VideoController = (function() {
     function VideoController(context) {
+      var markup, template;
       this.context = context;
       this.seekTo = bind(this.seekTo, this);
       this.seekOff = bind(this.seekOff, this);
@@ -20,6 +21,12 @@
       this.onReady = bind(this.onReady, this);
       this.resize = bind(this.resize, this);
       this.bindEvents = bind(this.bindEvents, this);
+      this.urlId = this.context.data('url');
+      template = require('video_template.html');
+      markup = template({
+        urlId: this.urlId
+      });
+      this.context.append(markup);
       this.win = $(window);
       this.playerContainer = this.context.find('.player-container');
       this.thumbnail = this.playerContainer.find('img');
@@ -30,10 +37,8 @@
     }
 
     VideoController.prototype.init = function() {
-      var url;
-      url = this.context.data('url');
       return this.player = new YT.Player(this.playerEl.get(0), {
-        videoId: url,
+        videoId: this.urlId,
         playerVars: {
           'autohide': 1,
           'controls': 0,

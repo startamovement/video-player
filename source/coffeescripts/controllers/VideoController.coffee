@@ -2,6 +2,12 @@
 
 class ib.VideoController
   constructor: (@context) ->
+    @urlId = @context.data 'url'
+
+    template = require 'video_template.html'
+    markup = template {urlId: @urlId}
+    @context.append markup
+
     @win = $ window
     @playerContainer = @context.find '.player-container'
     @thumbnail = @playerContainer.find 'img'
@@ -11,10 +17,8 @@ class ib.VideoController
     @progressBar = @progressContainer.find '.bar'
 
   init: ->
-    url = @context.data 'url'
-
     @player = new YT.Player @playerEl.get(0),
-      videoId: url
+      videoId: @urlId
       playerVars:
         'autohide': 1
         'controls': 0
@@ -54,7 +58,7 @@ class ib.VideoController
   onPlayerStateChange: (event) =>
     clearInterval @progress if @progress
 
-    if event.data == YT.PlayerState.PLAYING
+    if event.data is YT.PlayerState.PLAYING
       @context.removeClass 'inactive'
       @progressBarOn()
 
@@ -103,7 +107,7 @@ class ib.VideoController
     percentage = diff/width
     time = percentage * @totalTime
 
-    @updateProgressBar(percentage*100)
+    @updateProgressBar percentage*100
     @player.seekTo seconds = time
 
 
