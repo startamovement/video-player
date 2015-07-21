@@ -2,13 +2,14 @@
 
 class ib.VideoController
   constructor: (@context) ->
+    @win = $ window
     @urlId = @context.data 'url'
 
     template = require 'video_template.html'
-    html = template urlId: @urlId
+    html = template
+      urlId: @urlId
     @context.append html
 
-    @win = $ window
     @playerContainer = @context.find '.player-container'
     @thumbnail = @playerContainer.find 'img'
     @playerEl = @playerContainer.find '.player'
@@ -29,8 +30,19 @@ class ib.VideoController
         'onReady': @onReady
         'onStateChange': @onPlayerStateChange
 
+  onReady: =>
+    @context.fadeTo 400, 100
+
+    video = @context.find 'iframe'
+    @ratio = video.height()/video.width()
+    @totalTime = @player.getDuration()
+
+    @resize()
+    @bindEvents()
+
   bindEvents: =>
-    @win.on ib.Events.PAUSE_VIDEOS, @pause
+    @win.on ib.Events.PAUSE_VIDEOS, =>
+      @player.pauseVideo()
     @win.on 'resize', @resize
     @playButton.on 'click', @playButtonHandler
     @progressContainer.on 'click', @seekTo
@@ -45,16 +57,6 @@ class ib.VideoController
     @context.height newHeight
     @player.setSize width = newWidth, height = newHeight
 
-  onReady: =>
-    @totalTime = @player.getDuration()
-    video = @context.find 'iframe'
-    @ratio = video.height()/video.width()
-
-    @resize()
-    @bindEvents()
-
-    @context.addClass 'inactive ready'
-
   onPlayerStateChange: (event) =>
     clearInterval @progress if @progress
 
@@ -67,30 +69,27 @@ class ib.VideoController
 
     else if event.data is YT.PlayerState.ENDED
       @context.addClass 'inactive'
-      @thumbnail.removeClass 'hide'
+      @thumbnail.show()
 
   playButtonHandler: =>
     if @context.hasClass 'inactive'
       @win.trigger ib.Events.PAUSE_VIDEOS
       @player.playVideo()
-      if not @thumbnail.hasClass 'hide'
-        @thumbnail.addClass 'hide'
+      if @thumbnail.is ':visible'
+        @thumbnail.hide()
     else
-      @pause()
-
-  pause: =>
-    @player.pauseVideo()
+      @player.pauseVideo()
 
   progressBarOn: =>
     @progress = setInterval =>
       currentTime = @player.getCurrentTime()
-      diff = (currentTime/@totalTime)*100
+      diff = (currentTime/@totalTime)
 
       @updateProgressBar diff
     , 500
 
   updateProgressBar: (percentage) =>
-    @progressBar.width(percentage + '%')
+    @progressBar.width percentage*100+'%'
 
   seekOn: =>
     @progressContainer.on 'mousemove', @seekTo
@@ -104,10 +103,10 @@ class ib.VideoController
     width = @progressContainer.width()
 
     diff = x - offset
-    percentage = diff/width
+    percentage = (diff/width)
     time = percentage * @totalTime
 
-    @updateProgressBar percentage*100
+    @updateProgressBar percentage
     @player.seekTo seconds = time
 
 

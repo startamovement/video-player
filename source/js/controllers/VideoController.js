@@ -15,19 +15,18 @@
       this.seekOn = bind(this.seekOn, this);
       this.updateProgressBar = bind(this.updateProgressBar, this);
       this.progressBarOn = bind(this.progressBarOn, this);
-      this.pause = bind(this.pause, this);
       this.playButtonHandler = bind(this.playButtonHandler, this);
       this.onPlayerStateChange = bind(this.onPlayerStateChange, this);
-      this.onReady = bind(this.onReady, this);
       this.resize = bind(this.resize, this);
       this.bindEvents = bind(this.bindEvents, this);
+      this.onReady = bind(this.onReady, this);
+      this.win = $(window);
       this.urlId = this.context.data('url');
       template = require('video_template.html');
       html = template({
         urlId: this.urlId
       });
       this.context.append(html);
-      this.win = $(window);
       this.playerContainer = this.context.find('.player-container');
       this.thumbnail = this.playerContainer.find('img');
       this.playerEl = this.playerContainer.find('.player');
@@ -53,8 +52,22 @@
       });
     };
 
+    VideoController.prototype.onReady = function() {
+      var video;
+      this.context.fadeTo(400, 100);
+      video = this.context.find('iframe');
+      this.ratio = video.height() / video.width();
+      this.totalTime = this.player.getDuration();
+      this.resize();
+      return this.bindEvents();
+    };
+
     VideoController.prototype.bindEvents = function() {
-      this.win.on(ib.Events.PAUSE_VIDEOS, this.pause);
+      this.win.on(ib.Events.PAUSE_VIDEOS, (function(_this) {
+        return function() {
+          return _this.player.pauseVideo();
+        };
+      })(this));
       this.win.on('resize', this.resize);
       this.playButton.on('click', this.playButtonHandler);
       this.progressContainer.on('click', this.seekTo);
@@ -71,16 +84,6 @@
       return this.player.setSize(width = newWidth, height = newHeight);
     };
 
-    VideoController.prototype.onReady = function() {
-      var video;
-      this.totalTime = this.player.getDuration();
-      video = this.context.find('iframe');
-      this.ratio = video.height() / video.width();
-      this.resize();
-      this.bindEvents();
-      return this.context.addClass('inactive ready');
-    };
-
     VideoController.prototype.onPlayerStateChange = function(event) {
       if (this.progress) {
         clearInterval(this.progress);
@@ -92,7 +95,7 @@
         return this.context.addClass('inactive');
       } else if (event.data === YT.PlayerState.ENDED) {
         this.context.addClass('inactive');
-        return this.thumbnail.removeClass('hide');
+        return this.thumbnail.show();
       }
     };
 
@@ -100,16 +103,12 @@
       if (this.context.hasClass('inactive')) {
         this.win.trigger(ib.Events.PAUSE_VIDEOS);
         this.player.playVideo();
-        if (!this.thumbnail.hasClass('hide')) {
-          return this.thumbnail.addClass('hide');
+        if (this.thumbnail.is(':visible')) {
+          return this.thumbnail.hide();
         }
       } else {
-        return this.pause();
+        return this.player.pauseVideo();
       }
-    };
-
-    VideoController.prototype.pause = function() {
-      return this.player.pauseVideo();
     };
 
     VideoController.prototype.progressBarOn = function() {
@@ -117,14 +116,14 @@
         return function() {
           var currentTime, diff;
           currentTime = _this.player.getCurrentTime();
-          diff = (currentTime / _this.totalTime) * 100;
+          diff = currentTime / _this.totalTime;
           return _this.updateProgressBar(diff);
         };
       })(this), 500);
     };
 
     VideoController.prototype.updateProgressBar = function(percentage) {
-      return this.progressBar.width(percentage + '%');
+      return this.progressBar.width(percentage * 100 + '%');
     };
 
     VideoController.prototype.seekOn = function() {
@@ -143,7 +142,7 @@
       diff = x - offset;
       percentage = diff / width;
       time = percentage * this.totalTime;
-      this.updateProgressBar(percentage * 100);
+      this.updateProgressBar(percentage);
       return this.player.seekTo(seconds = time);
     };
 
