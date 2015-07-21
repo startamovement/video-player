@@ -5,13 +5,13 @@ class ib.VideoController
     @urlId = @context.data 'url'
 
     template = require 'video_template.html'
-    markup = template {urlId: @urlId}
-    @context.append markup
+    html = template {urlId: @urlId}
+    @context.append html
 
     @win = $ window
     @playerContainer = @context.find '.player-container'
     @thumbnail = @playerContainer.find 'img'
-    @playerEl = @playerContainer.find 'div'
+    @playerEl = @playerContainer.find '.player'
     @playButton = @playerContainer.find 'figure'
     @progressContainer = @playerContainer.find '.progress-container'
     @progressBar = @progressContainer.find '.bar'

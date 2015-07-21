@@ -8,7 +8,7 @@
 
   ib.VideoController = (function() {
     function VideoController(context) {
-      var markup, template;
+      var html, template;
       this.context = context;
       this.seekTo = bind(this.seekTo, this);
       this.seekOff = bind(this.seekOff, this);
@@ -23,14 +23,14 @@
       this.bindEvents = bind(this.bindEvents, this);
       this.urlId = this.context.data('url');
       template = require('video_template.html');
-      markup = template({
+      html = template({
         urlId: this.urlId
       });
-      this.context.append(markup);
+      this.context.append(html);
       this.win = $(window);
       this.playerContainer = this.context.find('.player-container');
       this.thumbnail = this.playerContainer.find('img');
-      this.playerEl = this.playerContainer.find('div');
+      this.playerEl = this.playerContainer.find('.player');
       this.playButton = this.playerContainer.find('figure');
       this.progressContainer = this.playerContainer.find('.progress-container');
       this.progressBar = this.progressContainer.find('.bar');
