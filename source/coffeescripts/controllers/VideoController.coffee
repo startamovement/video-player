@@ -5,7 +5,7 @@ class ib.VideoController
     @urlId = @context.data 'url'
 
     template = require 'video_template.html'
-    html = template {urlId: @urlId}
+    html = template urlId: @urlId
     @context.append html
 
     @win = $ window
