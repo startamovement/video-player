@@ -54,7 +54,7 @@
 
     VideoController.prototype.onReady = function() {
       var video;
-      this.context.fadeTo(400, 100);
+      this.context.fadeTo(400, 1);
       video = this.context.find('iframe');
       this.ratio = video.height() / video.width();
       this.totalTime = this.player.getDuration();
@@ -85,16 +85,18 @@
     };
 
     VideoController.prototype.onPlayerStateChange = function(event) {
+      var className;
       if (this.progress) {
         clearInterval(this.progress);
       }
+      className = 'inactive';
       if (event.data === YT.PlayerState.PLAYING) {
-        this.context.removeClass('inactive');
+        this.context.removeClass(className);
         return this.progressBarOn();
       } else if (event.data === YT.PlayerState.PAUSED) {
-        return this.context.addClass('inactive');
+        return this.context.addClass(className);
       } else if (event.data === YT.PlayerState.ENDED) {
-        this.context.addClass('inactive');
+        this.context.addClass(className);
         return this.thumbnail.show();
       }
     };

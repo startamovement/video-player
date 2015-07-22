@@ -31,7 +31,7 @@ class ib.VideoController
         'onStateChange': @onPlayerStateChange
 
   onReady: =>
-    @context.fadeTo 400, 100
+    @context.fadeTo 400, 1
 
     video = @context.find 'iframe'
     @ratio = video.height()/video.width()
@@ -59,16 +59,17 @@ class ib.VideoController
 
   onPlayerStateChange: (event) =>
     clearInterval @progress if @progress
+    className = 'inactive'
 
     if event.data is YT.PlayerState.PLAYING
-      @context.removeClass 'inactive'
+      @context.removeClass className
       @progressBarOn()
 
     else if event.data is YT.PlayerState.PAUSED
-      @context.addClass 'inactive'
+      @context.addClass className
 
     else if event.data is YT.PlayerState.ENDED
-      @context.addClass 'inactive'
+      @context.addClass className
       @thumbnail.show()
 
   playButtonHandler: =>
@@ -104,7 +105,7 @@ class ib.VideoController
 
     diff = x - offset
     percentage = diff/width
-    time = percentage * @totalTime
+    time = percentage*@totalTime
 
     @updateProgressBar percentage
     @player.seekTo seconds = time
