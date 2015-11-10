@@ -2,6 +2,8 @@
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
+  require('controllers/Events');
+
   if (this.ib == null) {
     this.ib = {};
   }
@@ -71,43 +73,37 @@
       this.win.on('resize', this.resize);
       this.playButton.on('click', this.playButtonHandler);
       this.progressContainer.on('click', this.seekTo);
-      this.progressContainer.on('mousedown', this.seekOn);
-      return this.progressContainer.on('mouseup', this.seekOff);
+      return this.progressContainer.on('mousedown', this.seekOn);
     };
 
     VideoController.prototype.resize = function() {
-      var height, newHeight, newWidth, width;
+      var newHeight, newWidth;
       newWidth = this.context.width();
       newHeight = newWidth * this.ratio;
       this.playerContainer.height(newHeight);
       this.context.height(newHeight);
-      return this.player.setSize(width = newWidth, height = newHeight);
+      return this.player.setSize(newWidth, newHeight);
     };
 
     VideoController.prototype.onPlayerStateChange = function(event) {
-      var className;
-      if (this.progress) {
-        clearInterval(this.progress);
-      }
-      className = 'inactive';
+      clearInterval(this.progress);
       if (event.data === YT.PlayerState.PLAYING) {
-        this.context.removeClass(className);
-        return this.progressBarOn();
+        this.context.removeClass('inactive');
+        this.progressBarOn();
+        return this.player.mute();
       } else if (event.data === YT.PlayerState.PAUSED) {
-        return this.context.addClass(className);
+        return this.context.addClass('inactive');
       } else if (event.data === YT.PlayerState.ENDED) {
-        this.context.addClass(className);
+        this.context.addClass('inactive');
         return this.thumbnail.show();
       }
     };
 
     VideoController.prototype.playButtonHandler = function() {
+      this.thumbnail.hide();
       if (this.context.hasClass('inactive')) {
         this.win.trigger(ib.Events.PAUSE_VIDEOS);
-        this.player.playVideo();
-        if (this.thumbnail.is(':visible')) {
-          return this.thumbnail.hide();
-        }
+        return this.player.playVideo();
       } else {
         return this.player.pauseVideo();
       }
@@ -129,15 +125,17 @@
     };
 
     VideoController.prototype.seekOn = function() {
-      return this.progressContainer.on('mousemove', this.seekTo);
+      this.win.on('mouseup', this.seekOff);
+      return this.win.on('mousemove', this.seekTo);
     };
 
     VideoController.prototype.seekOff = function() {
-      return this.progressContainer.off('mousemove', this.seekTo);
+      this.win.off('mouseup', this.seekOff);
+      return this.win.off('mousemove', this.seekTo);
     };
 
     VideoController.prototype.seekTo = function(e) {
-      var diff, offset, percentage, seconds, time, width, x;
+      var diff, offset, percentage, time, width, x;
       x = e.clientX;
       offset = this.progressContainer.offset().left;
       width = this.progressContainer.width();
@@ -145,7 +143,7 @@
       percentage = diff / width;
       time = percentage * this.totalTime;
       this.updateProgressBar(percentage);
-      return this.player.seekTo(seconds = time);
+      return this.player.seekTo(time);
     };
 
     return VideoController;

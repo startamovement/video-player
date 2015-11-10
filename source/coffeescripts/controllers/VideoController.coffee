@@ -1,3 +1,5 @@
+require('controllers/Events')
+
 @ib ?= {}
 
 class ib.VideoController
@@ -47,7 +49,6 @@ class ib.VideoController
     @playButton.on 'click', @playButtonHandler
     @progressContainer.on 'click', @seekTo
     @progressContainer.on 'mousedown', @seekOn
-    @progressContainer.on 'mouseup', @seekOff
 
   resize: =>
     newWidth = @context.width()
@@ -55,29 +56,28 @@ class ib.VideoController
 
     @playerContainer.height newHeight
     @context.height newHeight
-    @player.setSize width = newWidth, height = newHeight
+    @player.setSize newWidth, newHeight
 
   onPlayerStateChange: (event) =>
-    clearInterval @progress if @progress
-    className = 'inactive'
+    clearInterval @progress
 
     if event.data is YT.PlayerState.PLAYING
-      @context.removeClass className
+      @context.removeClass 'inactive'
       @progressBarOn()
+      @player.mute()
 
     else if event.data is YT.PlayerState.PAUSED
-      @context.addClass className
+      @context.addClass 'inactive'
 
     else if event.data is YT.PlayerState.ENDED
-      @context.addClass className
+      @context.addClass 'inactive'
       @thumbnail.show()
 
   playButtonHandler: =>
+    @thumbnail.hide()
     if @context.hasClass 'inactive'
       @win.trigger ib.Events.PAUSE_VIDEOS
       @player.playVideo()
-      if @thumbnail.is ':visible'
-        @thumbnail.hide()
     else
       @player.pauseVideo()
 
@@ -93,10 +93,12 @@ class ib.VideoController
     @progressBar.width percentage*100+'%'
 
   seekOn: =>
-    @progressContainer.on 'mousemove', @seekTo
+    @win.on 'mouseup', @seekOff
+    @win.on 'mousemove', @seekTo
 
   seekOff: =>
-    @progressContainer.off 'mousemove', @seekTo
+    @win.off 'mouseup', @seekOff
+    @win.off 'mousemove', @seekTo
 
   seekTo: (e) =>
     x = e.clientX
@@ -108,6 +110,4 @@ class ib.VideoController
     time = percentage*@totalTime
 
     @updateProgressBar percentage
-    @player.seekTo seconds = time
-
-
+    @player.seekTo time
